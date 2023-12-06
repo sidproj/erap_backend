@@ -37,6 +37,11 @@ public class ScheduleService {
         scheduleDAO.update(schedule);
     }
 
+    public ArrayList<Schedule> findAll(){
+        ArrayList<Schedule> schedules = scheduleDAO.find();
+        return schedules;
+    }
+
     public void deleteSchedule(ScheduleTO scheduleTO){
         Schedule schedule = scheduleDAO.findById(scheduleTO.getId());
         scheduleDAO.delete(schedule);

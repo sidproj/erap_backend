@@ -5,6 +5,7 @@ import dao.ServiceDAO;
 import models.Professional;
 import models.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ServiceService {
@@ -31,6 +32,11 @@ public class ServiceService {
         Service service = serviceDAO.findById(serviceTO.getId());
         service.copy(serviceTO);
         serviceDAO.update(service);
+    }
+
+    public ArrayList<Service> findAll(){
+        ArrayList<Service> services = serviceDAO.find();
+        return services;
     }
 
     public void deleteService(ServiceTO serviceTO){

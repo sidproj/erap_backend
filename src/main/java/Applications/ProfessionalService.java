@@ -21,4 +21,14 @@ public class ProfessionalService {
         Professional professional = professionalDAO.findById(id);
         return professional;
     }
+
+    public ArrayList<Professional> getProfessionals(){
+        ArrayList<Professional> professionals = professionalDAO.find();
+        return professionals;
+    }
+
+    public void deleteProfessional(int professional_id){
+        Professional professional = professionalDAO.findById(professional_id);
+        professionalDAO.delete(professional);
+    }
 }
