@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class UserDAO {
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("erap");
-    private EntityManager em =emf.createEntityManager();
+    private EntityManager em = emf.createEntityManager();
 
     public User findById(int id){
         User user = em.find(User.class,id);

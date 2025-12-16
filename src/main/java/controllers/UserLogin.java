@@ -5,6 +5,7 @@ import TO.Credentials;
 import TO.ErrorTO;
 import TO.UserTO;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import models.User;
 import utils.DataConversion;
 
@@ -19,32 +20,46 @@ import java.io.PrintWriter;
 @WebServlet(name = "UserLogin",urlPatterns = {"/user_login"})
 public class UserLogin extends HttpServlet {
 
-    // Utils
-    private DataConversion dataConversion = new DataConversion();
-    // Application layer
-    private LoginService login = new LoginService();
-
-    // GSON
-    private Gson gson = new Gson();
+    private final DataConversion dataConversion = new DataConversion();
+    private final LoginService login = new LoginService();
+    private final Gson gson = new Gson();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
-        String body = dataConversion.requestToJsonString(request);
-        Credentials credentials = gson.fromJson(body,Credentials.class);
-        User user = login.loginUser(credentials.getEmail(), credentials.getPassword());
-        String jsonString;
+        String jsonString = "";
         PrintWriter responseOut = response.getWriter();
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        try {
+            String body = dataConversion.requestToJsonString(request);
+            Credentials credentials = gson.fromJson(body, Credentials.class);
+            System.out.println(credentials.getEmail() + " " + credentials.getPassword());
+            User user = login.loginUser(credentials.getEmail(), credentials.getPassword());
 
-        if(user == null){
-            ErrorTO errorTO = new ErrorTO("Invalid login credentials","ILC-U");
-            jsonString= gson.toJson(errorTO);
-        }else {
-            UserTO userTO = new UserTO(user);
-            jsonString = gson.toJson(userTO);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            if (user == null) {
+                ErrorTO errorTO = new ErrorTO("Invalid login credentials", "ILC-U");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                jsonString = gson.toJson(errorTO);
+            } else {
+                UserTO userTO = new UserTO(user);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonString = gson.toJson(userTO);
+            }
         }
-        responseOut.print(jsonString);
-        responseOut.flush();
+        catch(IOException e){
+            ErrorTO errorTO = new ErrorTO("Error while reading request", "ILC-U");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            jsonString = gson.toJson(errorTO);
+        }
+        catch (JsonSyntaxException | NullPointerException e){
+            ErrorTO errorTO = new ErrorTO("Invalid request data", "ILC-U");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            jsonString = gson.toJson(errorTO);
+        }
+        finally {
+            responseOut.print(jsonString);
+            responseOut.flush();
+        }
     }
 }
