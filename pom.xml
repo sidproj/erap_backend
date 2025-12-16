@@ -13,11 +13,10 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
   <dependencies>
     <dependency>
@@ -67,17 +66,42 @@
 
   <build>
     <finalName>erap_backend</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+
       <plugins>
-        <!-- Tomcat Plugin. Default port is 9090 -->
-        <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.2</version>
-          <configuration>
-            <port>5000</port>
-          </configuration>
-        </plugin>
+          <plugin>
+              <groupId>org.codehaus.cargo</groupId>
+              <artifactId>cargo-maven3-plugin</artifactId>
+              <version>1.10.9</version>
+              <configuration>
+                  <container>
+                      <containerId>tomcat9x</containerId>
+                      <type>embedded</type>
+                  </container>
+                  <configuration>
+                      <properties>
+                          <cargo.servlet.port>5000</cargo.servlet.port>
+                      </properties>
+                  </configuration>
+              </configuration>
+          </plugin>
+
+          <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.8.0</version>
+              <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+              </configuration>
+          </plugin>
+
+          <plugin>
+              <artifactId>maven-war-plugin</artifactId>
+              <version>3.2.2</version>
+          </plugin>
+      </plugins>
+
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (maybe moved to parent pom) -->
+      <plugins>
 
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
